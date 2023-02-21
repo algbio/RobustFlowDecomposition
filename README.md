@@ -1,8 +1,7 @@
-# Robust
+# Robust Flow Decomposition
 Flow Decomposition Under Uncertainty
 
-MFD-Robust is a collective tool reporting paths for minimum flow decomposition (MFD) under uncertaint using integer linear programming, using different techniques such as
-bounded-error, inexact, least-squares and path-error.
+MFD-Robust is a collective tool reporting paths for minimum flow decomposition (MFD) under uncertaint using integer linear programming, using different techniques such as bounded-error, inexact, least-squares and path-error.
 
 It is composed of four different models to address MFD under uncertainty.
 
@@ -14,16 +13,26 @@ It is composed of four different models to address MFD under uncertainty.
 
 - Path - Error:
 
-It is contain an evaluation  
+The following Figure highlights the different between methods:
+
+<img src="https://github.com/algbio/MFD-ILP/raw/main/fd_cycles.png" width="900" height="550">
+
+
+It also contains an evaluation module that ...
+
 
 # Run
 
 To run each model individually, simply try:
 
 Bounded-Error: `python ./imperfect_bounded.py -i ./example_inputs/example.graph -o ./example.out`
+
 Least-Squares: `python ./imperfect_least_squares.py -i ./example_inputs/example.graph -o ./example.out`
+
 Path-Errors: `python ./imperfect_path_errors.py -i ./example_inputs/example.graph -o ./example.out`
+
 Inexact: `python ./imperfect_inexact.py -i ./example_inputs/example_inexact.graph -o ./example.out`
+
 
 To the run all methods together, try:
 
