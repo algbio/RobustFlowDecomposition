@@ -16,7 +16,7 @@ It is composed of four different models to address MFD under uncertainty.
 
 The following Figure highlights the different between methods:
 
-<img src="https://github.com/algbio/Robust/raw/main/Bounds.png" width="900" height="550">
+<img src="https://github.com/algbio/Robust/raw/Bounds.png" width="900" height="550">
 
 
 It also contains an evaluation module that calculates and compares their outputs with the  of in three metric:
