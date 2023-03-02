@@ -5,20 +5,25 @@ MFD-Robust is a collective tool reporting paths for minimum flow decomposition (
 
 It is composed of four different models to address MFD under uncertainty.
 
-- Bounded - Error:
+- Bounded - Error: given an imperfect flow network, find the minimum set of paths which allows imperfect flow values in each edge bounded by a budget $B$. It is the implementation of the model implemented in .
 
-- Inexact:
 
-- Least - Squares:
+- Inexact: given an imperfect flow network, find the minimum set of paths considering that for each edge the flow level is limited within a fixed range;
 
-- Path - Error:
+- Least - Squares:  find the minimum flow decomposition based on minimizing the sum of flow errors in each edge;
+
+- Path - Error: given an imperfect flow network, find a minimum flow decomposition that minimizes the error allowed in each path;
 
 The following Figure highlights the different between methods:
 
 <img src="https://github.com/algbio/MFD-ILP/raw/main/fd_cycles.png" width="900" height="550">
 
 
-It also contains an evaluation module that ...
+It also contains an evaluation module that calculates and compares their outputs with the  of in three metric:
+
+- The superposition of the weighted paths matches the superposition of the ground truth paths (i.e., the original perfect flow);
+- The output paths (as sequences of edges) are exactly the same as the ground truth paths;
+- The output paths (as sequences of edges) are the same as the ground truth paths, and each path has the same weight as the corresponding ground truth path.
 
 
 # Run
@@ -63,18 +68,22 @@ For each individual formulation:
 - `-t <n>` Use n threads for the Gurobi solver; use 0 for all threads (default 0).
 - `-ilptb <n>` Maximum time (in seconds) that the ilp solver is allowed to take when computing safe paths for one flow graph.
 If the solver takes more than n seconds, then safe for (all) flow decompositions is reported instead.
-- `-uef` Uses excess flow to save ILP calls.
-- `-uy2v` Use Y2V contraction on the flow graphs to reduce the ILP size.
-- `-s/es/rs/ess/esl/rss/rsl {scan, bin_search, exp_search, rep_exp_search}` When running the two-finger algorithm applied
-the specified strategy to extend/reduce the current safe interval.
-- `-st/est/rst <n>` When running the two-finger algorithm run the `small strategy` when the search space is less than n
-and the `large strategy` otherwise.
-- `-ugtd/-ugbu` Run a group testing algorithm (top down or bottom up) instead of two-finger.
 
 For the collective tool:
 
+- `-i <path to input file>`. Mandatory.
+- `-be <path to locate bounded error output>`. Mandatory.
+- `-ls <path to locate least-squares output>`. Mandatory.
+- `-ix <path to locate inexact output>`. Mandatory.
+- `-pe <path to locate path error output>`. Mandatory.
+- `-stats` Output stats to file <output>.stats
+- `-t <n>` Use n threads for the Gurobi solver; use 0 for all threads (default 0).
+- `-ilptb <n>` Maximum time (in seconds) that the ilp solver is allowed to take when computing safe paths for one flow graph.
+If the solver takes more than n seconds, then safe for (all) flow decompositions is reported instead.
+
 
 For the evaluation tool:
+
 
 
 ## Datasets
