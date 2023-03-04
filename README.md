@@ -87,8 +87,9 @@ For the evaluation tool:
 
 ## Datasets
 
-To obtain imperfect flow networks, we introduce errors or noise in the flow values of the edges, as follows. We first assume that the read coverage distribution follows a Poisson distribution. For each edge (u,v) with perfect flow value f, we consider the Poisson distribution Poisson(f). For each allowed error range $\epsilon 
-\in \{0.25,0.5,1\}$, 
+To obtain imperfect flow networks, we introduce errors or noise in the flow values of the edges, as follows. We first assume that the read coverage distribution follows a Poisson distribution. For each edge (u,v) with perfect flow value f, we consider the Poisson distribution Poisson(f). For each allowed error range 
+  
+  $\epsilon \in \{0.25,0.5,1\}$, 
 
 
 The datasets can be found in Zenodo at: [https://zenodo.org/record/](https://zenodo.org/record/)
