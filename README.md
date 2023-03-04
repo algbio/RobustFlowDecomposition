@@ -30,18 +30,17 @@ It also contains an evaluation module that calculates and compares their outputs
 
 To run each model individually, simply try:
 
-Bounded-Error: `python ./imperfect_bounded.py -i ./example_inputs/example.graph -o ./example.out`
+Bounded-Error: `python ./imperfect_bounded.py -i ./example_inputs/robust_input.graph -o ./example_outputs/bounded.out`
 
-Least-Squares: `python ./imperfect_least_squares.py -i ./example_inputs/example.graph -o ./example.out`
+Least-Squares: `python ./imperfect_least_squares.py -i ./example_inputs/robust_input.graph -o ./example_outputs/least_squares.out`
 
-Path-Errors: `python ./imperfect_path_errors.py -i ./example_inputs/example.graph -o ./example.out`
+Inexact: `python ./imperfect_inexact.py -i ./example_inputs/inexact_input.graph -o ./example_outputs/inexact.out`
 
-Inexact: `python ./imperfect_inexact.py -i ./example_inputs/example_inexact.graph -o ./example.out`
-
+Path-Errors: `python ./imperfect_path_errors.py -i ./example_inputs/robust_input.graph -o ./example_outputs/path_erros.out`
 
 To the run all methods together, try:
 
-`python ./imperfect_flow.py -i ./example.graph -o ....`
+`python ./imperfect_flow.py -i ./example_inputs/.graph -o ....`
 
 ## Input
 
@@ -87,5 +86,7 @@ For the evaluation tool:
 
 
 ## Datasets
+
+
 
 The datasets can be found in Zenodo at: [https://zenodo.org/record/](https://zenodo.org/record/)
