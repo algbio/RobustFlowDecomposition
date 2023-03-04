@@ -30,17 +30,17 @@ It also contains an evaluation module that calculates and compares their outputs
 
 To run each model individually, simply try:
 
-Bounded-Error: `python ./imperfect_bounded.py -i ./example_inputs/robust_input.graph -o ./example_outputs/bounded.out`
+Bounded-Error: `python ./previous_formulation/imperfect_bounded.py -i ./example_inputs/robust_input.graph -o ./example_outputs/bounded.out`
 
-Least-Squares: `python ./imperfect_least_squares.py -i ./example_inputs/robust_input.graph -o ./example_outputs/least_squares.out`
+Least-Squares: `python ./previous_formulation/imperfect_least_squares.py -i ./example_inputs/robust_input.graph -o ./example_outputs/least_squares.out`
 
-Inexact: `python ./imperfect_inexact.py -i ./example_inputs/inexact_input.graph -o ./example_outputs/inexact.out`
+Inexact: `python ./previous_formulation/imperfect_inexact.py -i ./example_inputs/inexact_input.graph -o ./example_outputs/inexact.out`
 
-Path-Errors: `python ./imperfect_path_errors.py -i ./example_inputs/robust_input.graph -o ./example_outputs/path_erros.out`
+Path-Errors: `python ./previous_formulation/imperfect_path_errors.py -i ./example_inputs/robust_input.graph -o ./example_outputs/path_erros.out`
 
 To the run all methods together, try:
 
-`python ./imperfect_flow.py -i ./example_inputs/.graph -o ....`
+`python ./previous_formulation/imperfect_flow.py -i ./example_inputs/.graph -o ....`
 
 ## Input
 
