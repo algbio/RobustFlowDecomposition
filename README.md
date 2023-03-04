@@ -87,6 +87,8 @@ For the evaluation tool:
 
 ## Datasets
 
+To obtain imperfect flow networks, we introduce errors or noise in the flow values of the edges, as follows. We first assume that the read coverage distribution follows a Poisson distribution, as commonly assumed, see e.g.~\cite{li2011isolasso,bernard2014efficient}. For each edge $(u,v)$ with perfect flow value $f_{uv}^*$, we consider the Poisson distribution $\text{Pois}(f_{uv}^*)$. For each allowed error range $\epsilon 
+\in \{0.25,0.5,1\}$, we compute the $(0.5 - \epsilon/2)*100$-th percentile and $(0.5 + e/2)*100$-th percentile of this distribution. To get an input for the \IX formulation, we use these two values as the two flow bounds $\underline{f}_{uv}$ and $\overline{f}_{uv}$, respectively, of edge $(u,v)$. As described in~\cite{williams2019rna}, it is possible that an infeasible instance is created using this approach for the \IX formulation. In this case, we re-create it until a feasible instance is found. To get an input to be used for the other formulations, for each edge $(u,v)$ we set its imperfect flow value $f_{uv}$ by taking a random sample from the distribution $\text{Pois}(f_{uv}^*)$, but restricted to the range between these two percentiles (and normalized to the mass of the distribution in this range); note that $\epsilon = 1$ corresponds to sampling from the full distribution. The data generation procedure can be found in the \url{https://github.com/FernandoHDias/Robust}, and the new dataset can be found in \url{https://zenodo.org/record/7671871}. 
 
 
 The datasets can be found in Zenodo at: [https://zenodo.org/record/](https://zenodo.org/record/)
