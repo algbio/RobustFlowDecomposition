@@ -1,5 +1,4 @@
 # Robust Flow Decomposition
-Flow Decomposition Under Uncertainty
 
 MFD-Robust is a collective tool reporting paths for minimum flow decomposition (MFD) under uncertaint using integer linear programming, using different techniques such as bounded-error, inexact, least-squares and path-error.
 
