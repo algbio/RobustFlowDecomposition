@@ -105,9 +105,9 @@ def mfd_algorithm(data):
 def build_base_ilp_model(data, size):
 
     graph = data['graph']
-    max_flow_value = data['max_flow_value']
     sources = data['sources']
     sinks = data['sinks']
+    M = 1e5
 
     # create extra sets
     T = [(u, v, i, k) for (u, v, i) in graph.edges(keys=True) for k in range(size)]
@@ -123,6 +123,8 @@ def build_base_ilp_model(data, size):
     x = model.addVars(T, vtype=GRB.INTEGER, name='x')
     w = model.addVars(SC, vtype=GRB.INTEGER, name='w', lb=0)
     z = model.addVars(T, vtype=GRB.CONTINUOUS, name='z', lb=0)
+    rho = model.addVars(sC, vtype=GRB.CONTINUOUS, name = 'rho', lb = 0)
+    phi = model.addVars(T, vtype=GRB.CONTINUOUS, name='z', lb=0)
 
     # flow conservation
     for k in range(size):
@@ -134,16 +136,23 @@ def build_base_ilp_model(data, size):
             if v not in sources and v not in sinks:
                 model.addConstr(sum(x[v, w, i, k] for _, w, i in graph.out_edges(v, keys=True)) - sum(x[u, v, i, k] for u, _, i in graph.in_edges(v, keys=True)) == 0)
 
-    # flow balance
+    # robust flow balance
     for (u, v, i, f) in graph.edges(keys=True, data='flow'):
-        model.addConstr(f == sum(z[u, v, i, k] for k in range(size)))
+        model.addConstr(f - sum(z[u, v, i, k] for k in range(size)))
 
-    # linearization
+    # linearization - x*w
     for (u, v, i) in graph.edges(keys=True):
         for k in range(size):
-            model.addConstr(z[u, v, i, k] <= max_flow_value * x[u, v, i, k])
-            model.addConstr(w[k] - (1 - x[u, v, i, k]) * max_flow_value <= z[u, v, i, k])
+            model.addConstr(z[u, v, i, k] <= M * x[u, v, i, k])
+            model.addConstr(w[k] - (1 - x[u, v, i, k]) * M <= z[u, v, i, k])
             model.addConstr(z[u, v, i, k] <= w[k])
+    
+    # linearization - x*rho
+    for (u, v, i) in graph.edges(keys=True):
+        for k in range(size):
+            model.addConstr(phi[u, v, i, k] <= M * x[u, v, i, k])
+            model.addConstr(w[k] - (1 - x[u, v, i, k]) * M <= phi[u, v, i, k])
+            model.addConstr(phi[u, v, i, k] <= w[k])
 
     return model, x, w, z
 
