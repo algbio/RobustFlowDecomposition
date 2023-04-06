@@ -24,6 +24,7 @@ It also contains an evaluation module that calculates and compares their outputs
 - The output paths (as sequences of edges) are exactly the same as the ground truth paths;
 - The output paths (as sequences of edges) are the same as the ground truth paths, and each path has the same weight as the corresponding ground truth path.
 
+The output of this tool is a file containt the name of the graph compared and a binary value for each metric above: 0, when the comparison between two outputs observed that those two outputs are divergent (regarding such a metric) or 1, if the outputs are equivalent.
 
 # Run
 
@@ -82,8 +83,9 @@ If the solver takes more than n seconds, then safe for (all) flow decompositions
 
 For the evaluation tool:
 
-
-
+- `-i <path to first input file>`. Mandatory.
+- `-p <path to second input file>`. Mandatory.
+- `-o <path to output file containing metric values>`. Mandatory.
 
 ## Datasets
 
