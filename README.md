@@ -40,7 +40,7 @@ Path-Errors: `python ./previous_formulation/imperfect_path_errors.py -i ./exampl
 
 To the run all methods together, try:
 
-`python ./previous_formulation/imperfect_flow.py -i ./example_inputs/.graph -o ....`
+`python ./previous_formulation/imperfect_flow.py -i ./example_inputs/.graph -o `
 
 ## Input
 
