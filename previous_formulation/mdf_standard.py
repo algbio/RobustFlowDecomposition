@@ -226,6 +226,7 @@ def output_paths(output,paths,weights):
     
     numberOfPaths = len(paths)
 
+
     for nP in range(0,numberOfPaths):
         nodes = set()
         for (i,j,k) in paths[nP]:
@@ -233,9 +234,9 @@ def output_paths(output,paths,weights):
             nodes.add(j)
         
         output.write(str(weights[nP]))
-        for i in nodes:
-            output.write(' '.join([' ',str(i)]))
-        output.write('\n')
+        for i in sorted(nodes):
+            output.write(' '.join(['',str(i)]))
+        output.write(' \n')
 
 def compute_graph_metadata(graph):
 
@@ -262,7 +263,7 @@ def solve_instances(graphs,output_file, output_stats=False):
         stats = open(f'{output_file}.stats', 'w+')
 
     for g, graph in enumerate(graphs):
-
+        print("#graph ",g)
         output.write(f'# graph {g}\n')
         if output_stats:
             stats.write(f'# graph {g}\n')
