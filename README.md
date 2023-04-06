@@ -40,7 +40,7 @@ Path-Errors: `python ./previous_formulation/imperfect_path_errors.py -i ./exampl
 
 To the run all methods together, try:
 
-`python ./previous_formulation/imperfect_flow.py -i ./example_inputs/.graph -o `
+`python ./previous_formulation/imperfect_flow.py -ie ./example_inputs/robust.graph -ii ./example_inputs/inexact.graph`
 
 ## Input
 
@@ -70,16 +70,8 @@ If the solver takes more than n seconds, then safe for (all) flow decompositions
 
 For the collective tool:
 
-- `-i <path to input file>`. Mandatory.
-- `-be <path to locate bounded error output>`. Mandatory.
-- `-ls <path to locate least-squares output>`. Mandatory.
-- `-ix <path to locate inexact output>`. Mandatory.
-- `-pe <path to locate path error output>`. Mandatory.
-- `-stats` Output stats to file <output>.stats
-- `-t <n>` Use n threads for the Gurobi solver; use 0 for all threads (default 0).
-- `-ilptb <n>` Maximum time (in seconds) that the ilp solver is allowed to take when computing safe paths for one flow graph.
-If the solver takes more than n seconds, then safe for (all) flow decompositions is reported instead.
-
+- `-ie <path to robust format input graph>`. Mandatory.
+- `-ie <path to inexact format input graph>`. Mandatory.
 
 For the evaluation tool:
 
