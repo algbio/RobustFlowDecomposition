@@ -6,10 +6,6 @@ from collections import deque
 from bisect import bisect
 from copy import deepcopy
 
-
-class TimeoutILP(Exception):
-    pass
-
 def get_ground_truth(raw_graph):
 
     graph = {
@@ -218,32 +214,16 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Computes maximal safe paths for Minimum Flow Decomposition.
-        This script uses the Gurobi ILP solver.
+        Evaluate the difference between the output of two different flow decomposition metrics.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument('-stats', '--output-stats', action='store_true', help='Output stats to file <output>.stats')
-    parser.add_argument('-wt', '--weighttype', type=str, default='int+',
-                        help='Type of path weights (default int+):\n   int+ (positive non-zero ints), \n   float+ (positive non-zero floats).')
-    parser.add_argument('-t', '--threads', type=int, default=0,
-                        help='Number of threads to use for the Gurobi solver; use 0 for all threads (default 0).')
-    parser.add_argument('-ilptb', '--ilp-time-budget', type=float, help='Maximum time (in seconds) that the ilp solver is allowed to take when computing safe paths for one graph')
-
-    
  
     requiredNamed = parser.add_argument_group('required arguments')
     requiredNamed.add_argument('-i', '--input', type=str, help='Input filename', required=True)
     requiredNamed.add_argument('-o', '--output',type=str, help='Output filename', required=True)
-    requiredNamed.add_argument('-p', '--compare',type=str,help='Comparative filename',required=True)
+    requiredNamed.add_argument('-p', '--compare',type=str,help='Comparative filename', required=True)
     args = parser.parse_args()
 
-    threads = args.threads
-    if threads == 0:
-        threads = os.cpu_count()
-    print(f'INFO: Using {threads} threads for the Gurobi solver')
 
-    ilp_counter = 0
-    ilp_time_budget = args.ilp_time_budget
-    time_budget = args.ilp_time_budget
-    compare_instances(read_graph_solution(args.input),read_graph_solution(args.compare),args.output, args.output_stats)
+    compare_instances(read_graph_solution(args.input),read_graph_solution(args.compare))
