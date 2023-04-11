@@ -11,11 +11,6 @@ from collections import deque
 from bisect import bisect
 from copy import deepcopy
 
-
-class TimeoutILP(Exception):
-    pass
-
-
 def get_edge(raw_edge):
 
     parts = raw_edge.split()
@@ -204,7 +199,7 @@ def compute_graph_metadata(graph):
         'max_flow_value': max(ngraph.edges(data='flow'), key=lambda e: e[-1])[-1] if len(ngraph.edges) > 0 else -1,
     }
 
-def solve_instances(graphs,output_file, output_stats=False):
+def solve_instances(graphs,output_file):
 
     output = open(output_file, 'w+')
     if output_stats:
