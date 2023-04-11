@@ -44,49 +44,6 @@ def read_input_graphs(graph_file):
     graphs_raw = open(graph_file, 'r').read().split('#')[1:]
     return [get_graph(raw_g) for raw_g in graphs_raw]
 
-def read_safe_paths(safe_file):
-    paths = open(safe_file,'r').read().split('\n')
-
-    listOfGraphs = []
-    i = 0
-
-    while(True):
-        if i >= len(paths):
-            break;
-        if "#" in paths[i]:
-            
-            # newgraph
-            i = i + 1
-            if i >= len(paths):
-                break;
-            if "" == paths[i]:
-                break;
-
-            # list of paths
-            paths_list = []
-
-            while(True):
-
-                line = paths[i].split(" ")
-                path = (line[1:len(line)])
-                nodes = [eval(node) for node in path]
-                edges_list = [[nodes[i], nodes[i + 1]]
-                    for i in range(len(nodes) - 1)]
-                
-                paths_list.append(edges_list)
-
-                i = i + 1
-                if i >= len(paths):
-                    break;
-                if "#" in paths[i]:
-                    break;
-                if "" == paths[i]:
-                    break;
-
-            listOfGraphs.append(paths_list)    
-        
-    return listOfGraphs
-
 def read_input(graph_file):
 
     return read_input_graphs(graph_file)
@@ -182,9 +139,6 @@ def get_solution(model, data, size):
 
 def update_status(data, model):
 
-    global ilp_counter
-    ilp_counter += 1
-
     if model.status == GRB.OPTIMAL:
         data['message'] = 'solved'
         data['runtime'] = model.Runtime
@@ -193,29 +147,15 @@ def update_status(data, model):
         data['message'] = 'unsolved'
         data['runtime'] = 0
 
-    if ilp_time_budget:
-        global time_budget
-        time_budget -= model.Runtime
-
-        if model.status == GRB.TIME_LIMIT:
-            raise TimeoutILP()
-
     return data
 
 
 def fd_fixed_size(data, size):
-
-    if ilp_time_budget and time_budget < 0:
-        raise TimeoutILP()
-
+    
     # calculate a flow decomposition into size paths
     try:
         # Create a new model
         model, _, _, _ = build_base_ilp_model(data, size)
-
-
-        if ilp_time_budget:
-            model.setParam('TimeLimit', time_budget)
 
         # objective function
         model.optimize()
@@ -281,37 +221,17 @@ def solve_instances(graphs,output_file, output_stats=False):
 
         mfd = compute_graph_metadata(graph)
 
-        global time_budget
-        time_budget = ilp_time_budget
-
-        global ilp_counter
-        ilp_counter = 0
-
         if output_stats:
             is_unique_decomposition = True
 
         if len(mfd['graph'].edges) > 0:
 
-            try:
-                mfd = mfd_algorithm(mfd)
-                paths,weights = mfd['solution'],mfd['weights']
-                output_paths(output,paths,weights)
-
-                if output_stats:
-                    stats.write('timeout: 0\n')
-
-            except TimeoutILP:
-                if output_stats:
-                    stats.write('timeout: 1\n')
-
-        else:
-            if output_stats:
-                stats.write('timeout: 0\n')
-
+            mfd = mfd_algorithm(mfd)
+            paths,weights = mfd['solution'],mfd['weights']
+            output_paths(output,paths,weights)
 
     output.close()
-    if output_stats:
-        stats.close()
+
 
 
 if __name__ == '__main__':
@@ -323,14 +243,9 @@ if __name__ == '__main__':
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument('-stats', '--output-stats', action='store_true', help='Output stats to file <output>.stats')
-    parser.add_argument('-wt', '--weighttype', type=str, default='int+',
-                        help='Type of path weights (default int+):\n   int+ (positive non-zero ints), \n   float+ (positive non-zero floats).')
     parser.add_argument('-t', '--threads', type=int, default=0,
                         help='Number of threads to use for the Gurobi solver; use 0 for all threads (default 0).')
-    parser.add_argument('-ilptb', '--ilp-time-budget', type=float, help='Maximum time (in seconds) that the ilp solver is allowed to take when computing safe paths for one graph')
 
-    
  
     requiredNamed = parser.add_argument_group('required arguments')
     requiredNamed.add_argument('-i', '--input', type=str, help='Input filename', required=True)
@@ -343,7 +258,4 @@ if __name__ == '__main__':
         threads = os.cpu_count()
     print(f'INFO: Using {threads} threads for the Gurobi solver')
 
-    ilp_counter = 0
-    ilp_time_budget = args.ilp_time_budget
-    time_budget = args.ilp_time_budget
-    solve_instances(read_input(args.input),args.output, args.output_stats)
+    solve_instances(read_input(args.input),args.output)
