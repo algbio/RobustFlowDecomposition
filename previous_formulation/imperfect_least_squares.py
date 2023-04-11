@@ -226,7 +226,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Computes safe for Minimum Flow Decomposition under Uncertainty using least-squares minimizers.
+        Computes paths for Minimum Flow Decomposition under Uncertainty using least-squares minimizers.
         This script uses the Gurobi ILP solver.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
