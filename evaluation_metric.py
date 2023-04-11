@@ -2,8 +2,6 @@ import os
 import sys
 import argparse
 import networkx as nx
-import gurobipy as gp
-from gurobipy import GRB
 from collections import deque
 from bisect import bisect
 from copy import deepcopy
@@ -11,115 +9,6 @@ from copy import deepcopy
 
 class TimeoutILP(Exception):
     pass
-
-
-def get_edge(raw_edge):
-
-    parts = raw_edge.split()
-    return int(parts[0]), int(parts[1]), float(parts[2])
-
-def get_graph(raw_graph):
-
-    graph = {
-        'n': 0,
-        'edges': list()
-    }
-
-    try:
-        lines = raw_graph.split('\n')[1:]
-        if not lines[-1]:
-            lines = lines[:-1]
-        graph['n'], graph['edges'] = int(lines[0]), [get_edge(raw_e) for raw_e in lines[1:]]
-
-    finally:
-        return graph
-
-
-def read_input_graphs(graph_file):
-
-    graphs_raw = open(graph_file, 'r').read().split('#')[1:]
-    return [get_graph(raw_g) for raw_g in graphs_raw]
-
-def read_safe_paths(safe_file):
-    paths = open(safe_file,'r').read().split('\n')
-
-    listOfGraphs = []
-    i = 0
-
-    while(True):
-        if i >= len(paths):
-            break;
-        if "#" in paths[i]:
-            
-            # newgraph
-            i = i + 1
-            if i >= len(paths):
-                break;
-            if "" == paths[i]:
-                break;
-
-            # list of paths
-            paths_list = []
-
-            while(True):
-
-                line = paths[i].split(" ")
-                path = (line[1:len(line)])
-                nodes = [eval(node) for node in path]
-                edges_list = [[nodes[i], nodes[i + 1]]
-                    for i in range(len(nodes) - 1)]
-                
-                paths_list.append(edges_list)
-
-                i = i + 1
-                if i >= len(paths):
-                    break;
-                if "#" in paths[i]:
-                    break;
-                if "" == paths[i]:
-                    break;
-
-            listOfGraphs.append(paths_list)    
-        
-    return listOfGraphs
-
-def read_input(graph_file):
-
-    return read_input_graphs(graph_file)
-
-
-def output_paths(output,paths,weights):
-    
-    numberOfPaths = len(paths)
-
-    for nP in range(0,numberOfPaths):
-        nodes = set()
-        for (i,j,k) in paths[nP]:
-            nodes.add(i)
-            nodes.add(j)
-        
-        output.write(str(weights[nP]))
-        for i in nodes:
-            output.write(' '.join([' ',str(i)]))
-        output.write('\n')
-
-def compute_graph_metadata(graph):
-
-    # creation of NetworkX Graph
-    ngraph = nx.MultiDiGraph()
-    ngraph.add_weighted_edges_from(graph['edges'], weight='flow')
-
-    # calculating source, sinks
-    sources = [x for x in ngraph.nodes if ngraph.in_degree(x) == 0]
-    sinks = [x for x in ngraph.nodes if ngraph.out_degree(x) == 0]
-
-    # definition of data
-    return {
-        'graph': ngraph,
-        'sources': sources,
-        'sinks': sinks,
-        'max_flow_value': max(ngraph.edges(data='flow'), key=lambda e: e[-1])[-1] if len(ngraph.edges) > 0 else -1,
-    }
 
 def get_ground_truth(raw_graph):
 
@@ -315,7 +204,7 @@ def compare_instances(grounds,solutions,output_file, output_stats=False):
 def outputMetrics(output,metrics,K):
 
     for k in range(0,K):
-        #print(str(metrics['M1'][k]))
+        
         output.write(f'# graph {k}\n')
         M1 = metrics['M1'][k]
         M2 = metrics['M2'][k]
@@ -329,7 +218,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Compare the flow decomposition outputs from two different formulations.
+        Computes maximal safe paths for Minimum Flow Decomposition.
+        This script uses the Gurobi ILP solver.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
@@ -357,6 +247,3 @@ if __name__ == '__main__':
     ilp_time_budget = args.ilp_time_budget
     time_budget = args.ilp_time_budget
     compare_instances(read_graph_solution(args.input),read_graph_solution(args.compare),args.output, args.output_stats)
-    #print(read_graph_solution(args.input))
-    #print(read_graph_solution(args.compare))
-    #read_comparative(args.compare)
