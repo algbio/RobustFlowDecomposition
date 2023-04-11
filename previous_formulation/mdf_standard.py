@@ -217,7 +217,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Computes maximal safe paths for Minimum Flow Decomposition.
+        Computes paths for Minimum Flow Decomposition.
         This script uses the Gurobi ILP solver.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
