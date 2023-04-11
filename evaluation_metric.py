@@ -329,8 +329,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Computes maximal safe paths for Minimum Flow Decomposition.
-        This script uses the Gurobi ILP solver.
+        Compare the flow decomposition outputs from two different formulations.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
@@ -361,12 +360,3 @@ if __name__ == '__main__':
     #print(read_graph_solution(args.input))
     #print(read_graph_solution(args.compare))
     #read_comparative(args.compare)
-
-# functions required
-
-
-
-#- read outputs files from two sources: ground truth + a method done
-#- check metric one: build both graphs and compare edges values: 1 or 0
-#- check metric two: build paths and check edges in sequence (check strings of paths): 1 or 0 done
-#- check metric three: build paths and weights and check edges in sequence followed by flow value: 1 or 0
