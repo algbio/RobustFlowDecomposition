@@ -43,49 +43,6 @@ def read_input_graphs(graph_file):
     graphs_raw = open(graph_file, 'r').read().split('#')[1:]
     return [get_graph(raw_g) for raw_g in graphs_raw]
 
-def read_safe_paths(safe_file):
-    paths = open(safe_file,'r').read().split('\n')
-
-    listOfGraphs = []
-    i = 0
-
-    while(True):
-        if i >= len(paths):
-            break;
-        if "#" in paths[i]:
-            
-            # newgraph
-            i = i + 1
-            if i >= len(paths):
-                break;
-            if "" == paths[i]:
-                break;
-
-            # list of paths
-            paths_list = []
-
-            while(True):
-
-                line = paths[i].split(" ")
-                path = (line[1:len(line)])
-                nodes = [eval(node) for node in path]
-                edges_list = [[nodes[i], nodes[i + 1]]
-                    for i in range(len(nodes) - 1)]
-                
-                paths_list.append(edges_list)
-
-                i = i + 1
-                if i >= len(paths):
-                    break;
-                if "#" in paths[i]:
-                    break;
-                if "" == paths[i]:
-                    break;
-
-            listOfGraphs.append(paths_list)    
-        
-    return listOfGraphs
-
 def read_input(graph_file):
 
     return read_input_graphs(graph_file)
@@ -310,18 +267,13 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Computes maximal safe paths for Minimum Flow Decomposition.
+        Computes paths for Minimum Flow Decomposition under Uncertainty with Bounded Error.
         This script uses the Gurobi ILP solver.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument('-stats', '--output-stats', action='store_true', help='Output stats to file <output>.stats')
-    parser.add_argument('-wt', '--weighttype', type=str, default='int+',
-                        help='Type of path weights (default int+):\n   int+ (positive non-zero ints), \n   float+ (positive non-zero floats).')
     parser.add_argument('-t', '--threads', type=int, default=0,
                         help='Number of threads to use for the Gurobi solver; use 0 for all threads (default 0).')
-    parser.add_argument('-ilptb', '--ilp-time-budget', type=float, help='Maximum time (in seconds) that the ilp solver is allowed to take when computing safe paths for one graph')
-
     
  
     requiredNamed = parser.add_argument_group('required arguments')
