@@ -53,13 +53,13 @@ def mfd_algorithm(data):
 
     return data
 
-
 def build_base_ilp_model(data, size):
 
     graph = data['graph']
+    max_flow_value = data['max_flow_value']
     sources = data['sources']
     sinks = data['sinks']
-    M = 1e5
+    M = 1e3
 
     # create extra sets
     T = [(u, v, i, k) for (u, v, i) in graph.edges(keys=True) for k in range(size)]
@@ -72,11 +72,12 @@ def build_base_ilp_model(data, size):
 
 
     # Create variables
-    x = model.addVars(T, vtype=GRB.INTEGER, name='x')
+    x = model.addVars(T, vtype=GRB.BINARY, name='x')
     w = model.addVars(SC, vtype=GRB.INTEGER, name='w', lb=0)
+    pho = model.addVars(SC,vytpe=GRB.INTEGER,name="pho",lb=0)
     z = model.addVars(T, vtype=GRB.CONTINUOUS, name='z', lb=0)
-    rho = model.addVars(sC, vtype=GRB.CONTINUOUS, name = 'rho', lb = 0)
     phi = model.addVars(T, vtype=GRB.CONTINUOUS, name='z', lb=0)
+
 
     # flow conservation
     for k in range(size):
@@ -88,23 +89,24 @@ def build_base_ilp_model(data, size):
             if v not in sources and v not in sinks:
                 model.addConstr(sum(x[v, w, i, k] for _, w, i in graph.out_edges(v, keys=True)) - sum(x[u, v, i, k] for u, _, i in graph.in_edges(v, keys=True)) == 0)
 
-    # robust flow balance
+    # flow balance
     for (u, v, i, f) in graph.edges(keys=True, data='flow'):
-        model.addConstr(f - sum(z[u, v, i, k] for k in range(size)))
+        model.addConstr(f - sum(z[u, v, i, k] for k in range(size)) <= sum(phi[u, v, i, k] for k in range(size)))
+        model.addConstr(f - sum(z[u, v, i, k] for k in range(size)) >= - sum(phi[u, v, i, k] for k in range(size)))
 
     # linearization - x*w
     for (u, v, i) in graph.edges(keys=True):
         for k in range(size):
-            model.addConstr(z[u, v, i, k] <= M * x[u, v, i, k])
-            model.addConstr(w[k] - (1 - x[u, v, i, k]) * M <= z[u, v, i, k])
+            model.addConstr(z[u, v, i, k] <= max_flow_value * x[u, v, i, k])
+            model.addConstr(w[k] - (1 - x[u, v, i, k]) * max_flow_value <= z[u, v, i, k])
             model.addConstr(z[u, v, i, k] <= w[k])
-    
-    # linearization - x*rho
+        
+    # linearization - x*pho
     for (u, v, i) in graph.edges(keys=True):
         for k in range(size):
             model.addConstr(phi[u, v, i, k] <= M * x[u, v, i, k])
-            model.addConstr(w[k] - (1 - x[u, v, i, k]) * M <= phi[u, v, i, k])
-            model.addConstr(phi[u, v, i, k] <= w[k])
+            model.addConstr(pho[k] - (1 - x[u, v, i, k]) * M <= phi[u, v, i, k])
+            model.addConstr(phi[u, v, i, k] <= pho[k])
 
     return model, x, w, z
 
@@ -142,11 +144,12 @@ def update_status(data, model):
         data['message'] = 'unsolved'
         data['runtime'] = 0
 
+
     return data
 
 
 def fd_fixed_size(data, size):
-    
+
     # calculate a flow decomposition into size paths
     try:
         # Create a new model
@@ -170,6 +173,7 @@ def output_paths(output,paths,weights):
     
     numberOfPaths = len(paths)
 
+
     for nP in range(0,numberOfPaths):
         nodes = set()
         for (i,j,k) in paths[nP]:
@@ -177,9 +181,9 @@ def output_paths(output,paths,weights):
             nodes.add(j)
         
         output.write(str(weights[nP]))
-        for i in nodes:
-            output.write(' '.join([' ',str(i)]))
-        output.write('\n')
+        for i in sorted(nodes):
+            output.write(' '.join(['',str(i)]))
+        output.write(' \n')
 
 def compute_graph_metadata(graph):
 
@@ -202,22 +206,15 @@ def compute_graph_metadata(graph):
 def solve_instances(graphs,output_file):
 
     output = open(output_file, 'w+')
-    if output_stats:
-        stats = open(f'{output_file}.stats', 'w+')
 
     for g, graph in enumerate(graphs):
-
+        print("#graph ",g)
         output.write(f'# graph {g}\n')
-        if output_stats:
-            stats.write(f'# graph {g}\n')
 
         if not graph['edges']:
             continue
 
         mfd = compute_graph_metadata(graph)
-
-        if output_stats:
-            is_unique_decomposition = True
 
         if len(mfd['graph'].edges) > 0:
 
@@ -225,22 +222,21 @@ def solve_instances(graphs,output_file):
             paths,weights = mfd['solution'],mfd['weights']
             output_paths(output,paths,weights)
 
+
     output.close()
-
-
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(
         description='''
-        Computes paths for Minimum Flow Decomposition under Uncertainty via minimizing path errors.
+        Computes paths from Minimal Flow Decomposition under Uncertainty using Path-Errors
         This script uses the Gurobi ILP solver.
         ''',
         formatter_class=argparse.RawTextHelpFormatter
     )
+
     parser.add_argument('-t', '--threads', type=int, default=0,
                         help='Number of threads to use for the Gurobi solver; use 0 for all threads (default 0).')
-
  
     requiredNamed = parser.add_argument_group('required arguments')
     requiredNamed.add_argument('-i', '--input', type=str, help='Input filename', required=True)
@@ -252,5 +248,4 @@ if __name__ == '__main__':
     if threads == 0:
         threads = os.cpu_count()
     print(f'INFO: Using {threads} threads for the Gurobi solver')
-
     solve_instances(read_input(args.input),args.output)
